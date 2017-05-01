@@ -26,6 +26,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -121,6 +122,7 @@ public class ClientCnxnSocketNIO extends ClientCnxnSocket {
                     p.createBB();
                 }
                 sock.write(p.bb);
+                System.out.println("****** ClientCnxnSocketNIO.doIO Sending packet from client side: p.bb = " + Arrays.toString(p.bb.array()));
                 if (!p.bb.hasRemaining()) {
                     sentCount++;
                     outgoingQueue.removeFirstOccurrence(p);

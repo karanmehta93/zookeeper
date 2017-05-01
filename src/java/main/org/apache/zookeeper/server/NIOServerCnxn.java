@@ -30,6 +30,7 @@ import java.nio.channels.CancelledKeyException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.security.cert.Certificate;
+import java.util.Arrays;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -170,11 +171,13 @@ public class NIOServerCnxn extends ServerCnxn {
                         + Long.toHexString(sessionId)
                         + ", likely client has closed socket");
             }
+            System.out.println("NIOServerCnxn.doIO PayLoad Incoming Buffer = " + Arrays.toString(incomingBuffer.array()));
         }
 
         if (incomingBuffer.remaining() == 0) { // have we read length bytes?
             packetReceived();
             incomingBuffer.flip();
+            System.out.println("initialized = " + initialized);
             if (!initialized) {
                 readConnectRequest();
             } else {
@@ -325,6 +328,7 @@ public class NIOServerCnxn extends ServerCnxn {
                             + Long.toHexString(sessionId)
                             + ", likely client has closed socket");
                 }
+
                 if (incomingBuffer.remaining() == 0) {
                     boolean isPayload;
                     if (incomingBuffer == lenBuffer) { // start of next request
@@ -337,6 +341,7 @@ public class NIOServerCnxn extends ServerCnxn {
                     }
                     if (isPayload) { // not the case for 4letterword
                         readPayload();
+
                     }
                     else {
                         // four letter words take care
@@ -377,6 +382,7 @@ public class NIOServerCnxn extends ServerCnxn {
     }
 
     private void readRequest() throws IOException {
+        System.out.println("NIOServerCnxn.readRequest ZooKeeper Process: " + Arrays.toString(incomingBuffer.array()));
         zkServer.processPacket(this, incomingBuffer);
     }
 
@@ -546,6 +552,7 @@ public class NIOServerCnxn extends ServerCnxn {
     private boolean readLength(SelectionKey k) throws IOException {
         // Read the length, now get the buffer
         int len = lenBuffer.getInt();
+        System.out.println("Buffer Length allocation len = " + len);
         if (!initialized && checkFourLetterWord(sk, len)) {
             return false;
         }

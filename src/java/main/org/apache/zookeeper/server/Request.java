@@ -21,6 +21,7 @@ package org.apache.zookeeper.server;
 import java.nio.ByteBuffer;
 import java.util.List;
 
+import jline.internal.Log;
 import org.apache.jute.Record;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.OpCode;
@@ -119,6 +120,15 @@ public class Request {
 
     public void setTxn(Record txn) {
         this.txn = txn;
+    }
+
+    public void checkLatency() {
+        long completionTime = Time.currentElapsedTime();
+        long threshold = 0;
+        if((completionTime - this.createTime) > threshold) {
+            System.out.println("Request "  + this + " exceeded threshold");
+            System.out.println("Time: " + createTime + " " + completionTime + " " + (completionTime - this.createTime));
+        }
     }
 
     /**
